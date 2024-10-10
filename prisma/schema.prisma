@@ -1,0 +1,36 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Category {
+  id         Int         @id @default(autoincrement())
+  name       String
+  userId     Int?        @default(1)  // Temporarily fixed to 1 until the user system is implemented
+  tasks      Task[]      // Relation with tasks
+  rewards    Reward[]    // Relation with rewards
+}
+
+model Task {
+  id            Int       @id @default(autoincrement())
+  description   String
+  points        Int
+  categoryId    Int
+  userId        Int?      @default(1)  // Temporarily fixed to 1
+  completedDays Boolean[] @default([false, false, false, false, false, false, false]) // Array for days of the week
+  category      Category   @relation(fields: [categoryId], references: [id]) // Relation with category
+}
+
+model Reward {
+  id          Int       @id @default(autoincrement())
+  description String
+  points      Int       // Points to be "spent"
+  categoryId  Int
+  userId      Int?      @default(1)  // Temporarily fixed to 1
+  date        DateTime  @default(now())  // Timestamp for when the reward was used
+  category    Category  @relation(fields: [categoryId], references: [id]) // Relation with category
+}
